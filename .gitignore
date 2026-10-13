@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Local database and secrets
+*.db
+.env
+
+# Frontend (later)
+node_modules/
+dist/
+
+# SAFETY: never commit real inventory files.
+# Only fake test data in test-data/ is allowed.
+*.xlsx
+*.xls
+*.csv
+!test-data/*.xlsx
+
+# Editor / OS
+.vscode/
+Thumbs.db
