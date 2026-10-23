@@ -2,6 +2,7 @@ import { NavLink, Navigate, Route, Routes } from 'react-router'
 import CostsLayout from './pages/CostsLayout.tsx'
 import PriceList from './pages/PriceList.tsx'
 import Placeholder from './pages/Placeholder.tsx'
+import Settings from './pages/Settings.tsx'
 
 export default function App() {
   return (
@@ -22,6 +23,9 @@ export default function App() {
           <NavLink to="/settings">Settings</NavLink>
         </nav>
         <span className="spacer" />
+        <NavLink to="/settings" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
+          Upload inventory
+        </NavLink>
       </header>
       <main>
         <Routes>
@@ -31,7 +35,7 @@ export default function App() {
             <Route index element={<Placeholder title="" step="7d" embedded />} />
             <Route path="prices" element={<PriceList />} />
           </Route>
-          <Route path="/settings" element={<Placeholder title="Settings" step="7b" />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<Placeholder title="Page not found" />} />
         </Routes>
       </main>

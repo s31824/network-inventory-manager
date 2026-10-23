@@ -18,7 +18,31 @@ export type ModelCost = {
 
 export type ModelCostInput = Omit<ModelCost, 'id' | 'ownership_per_year'>
 
-export class ApiError extends Error {}
+export type ImportRecord = {
+  id: number
+  report_month: string
+  file_name: string
+  imported_at: string
+  rows_read: number
+  device_count: number
+}
+
+export type ImportPayload = {
+  report_month: string
+  file_name: string
+  rows_read: number
+  replace: boolean
+  locations: { code: string; city: string; country: string; category: string | null }[]
+  device_counts: { location_code: string; model: string; device_type: string; eos_date: string | null; count: number }[]
+}
+
+export class ApiError extends Error {
+  status: number
+  constructor(message: string, status: number) {
+    super(message)
+    this.status = status
+  }
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -38,7 +62,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     } catch {
       /* keep the generic message */
     }
-    throw new ApiError(message)
+    throw new ApiError(message, res.status)
   }
   return (res.status === 204 ? undefined : await res.json()) as T
 }
@@ -54,6 +78,11 @@ export const api = {
     }),
   deleteModelCost: (model: string) =>
     request<void>(`/api/model-costs/${encodeURIComponent(model)}`, { method: 'DELETE' }),
+  listImports: () => request<ImportRecord[]>('/api/imports'),
+  createImport: (data: ImportPayload) =>
+    request<ImportRecord>('/api/imports', { method: 'POST', body: JSON.stringify(data) }),
+  deleteImport: (month: string) =>
+    request<void>(`/api/imports/${encodeURIComponent(month)}`, { method: 'DELETE' }),
 }
 
 export function eur(value: string | number | null | undefined): string {
