@@ -36,6 +36,39 @@ export type ImportPayload = {
   device_counts: { location_code: string; model: string; device_type: string; eos_date: string | null; count: number }[]
 }
 
+export type EosModelLine = {
+  model: string
+  device_type: string
+  category: string
+  eos_date: string | null
+  devices: number
+  decommission: number
+  to_replace: number
+  replacement_model: string | null
+  replacement_is_default: boolean
+  replacement_unit_cost: string | null
+  replacement_cost: string | null
+}
+export type EosLocation = {
+  code: string
+  city: string
+  country: string
+  category: string | null
+  status: string
+  planned_month: string | null
+  devices: number
+  models: EosModelLine[]
+}
+export type EosOverview = {
+  year: number
+  devices: number
+  locations: EosLocation[]
+  models_reaching_eos: Record<string, number>
+}
+
+export const LOCATION_STATUSES = ['Not planned', 'Next', 'To ship', 'In progress', 'On hold',
+  'Exception', 'Decommission', 'Out of scope', 'Done'] as const
+
 export class ApiError extends Error {
   status: number
   constructor(message: string, status: number) {
@@ -78,6 +111,13 @@ export const api = {
     }),
   deleteModelCost: (model: string) =>
     request<void>(`/api/model-costs/${encodeURIComponent(model)}`, { method: 'DELETE' }),
+  eos: (year: number) => request<EosOverview>(`/api/eos?year=${year}`),
+  setLocationPlan: (year: number, code: string, data: { status: string; planned_month: string | null }) =>
+    request(`/api/eos/${year}/locations/${encodeURIComponent(code)}`, { method: 'PUT', body: JSON.stringify(data) }),
+  setModelPlan: (year: number, code: string, model: string,
+    data: { decommission_count: number; replacement_model: string | null }) =>
+    request(`/api/eos/${year}/locations/${encodeURIComponent(code)}/models/${encodeURIComponent(model)}`,
+      { method: 'PUT', body: JSON.stringify(data) }),
   listImports: () => request<ImportRecord[]>('/api/imports'),
   createImport: (data: ImportPayload) =>
     request<ImportRecord>('/api/imports', { method: 'POST', body: JSON.stringify(data) }),
