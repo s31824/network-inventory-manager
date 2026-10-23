@@ -144,3 +144,19 @@ tr:last-child td { border-bottom: 0; }
 .step button { width: 30px; height: 30px; border: 0; background: none; font: inherit; cursor: pointer; color: var(--muted); }
 .step button:disabled { opacity: .35; cursor: default; }
 .step b { min-width: 30px; text-align: center; border-left: 1px solid #efe7e0; border-right: 1px solid #efe7e0; line-height: 30px; }
+
+/* Costs */
+.tiles { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 14px; }
+.tiles.two-tiles { grid-template-columns: 1fr 1fr; }
+.tile { padding: 14px 18px; display: flex; flex-direction: column; gap: 2px; }
+.tile .v { font-size: 28px; font-weight: 700; }
+.tile.hero { border-color: #a3202b; box-shadow: inset 4px 0 0 #a3202b; }
+.meter { height: 8px; border-radius: 999px; background: #ebc7c9; overflow: hidden; margin-top: 8px; }
+.meter i { display: block; height: 100%; background: #a3202b; }
+.c3 { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--muted); }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+.c3 td, .c3 th { padding: 9px 10px; font-size: 14px; }
+.c3 td:first-child, .c3 th:first-child { padding-left: 18px; }
+.c3 td:last-child, .c3 th:last-child { padding-right: 18px; }
+@media (max-width: 1400px) { .c3 { grid-template-columns: 1fr 1fr; } .tiles { grid-template-columns: 1fr 1fr; } }

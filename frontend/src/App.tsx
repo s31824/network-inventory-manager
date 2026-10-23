@@ -4,6 +4,7 @@ import PriceList from './pages/PriceList.tsx'
 import Placeholder from './pages/Placeholder.tsx'
 import Settings from './pages/Settings.tsx'
 import EosPage from './pages/EosPage.tsx'
+import CostsOverview from './pages/CostsOverview.tsx'
 
 export default function App() {
   return (
@@ -33,7 +34,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/costs" replace />} />
           <Route path="/eos" element={<EosPage />} />
           <Route path="/costs" element={<CostsLayout />}>
-            <Route index element={<Placeholder title="" step="7d" embedded />} />
+            <Route index element={<CostsOverview />} />
             <Route path="prices" element={<PriceList />} />
           </Route>
           <Route path="/settings" element={<Settings />} />

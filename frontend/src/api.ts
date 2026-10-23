@@ -66,6 +66,32 @@ export type EosOverview = {
   models_reaching_eos: Record<string, number>
 }
 
+type Money = string
+export type OwnershipGroup = { label: string; licences: Money; support: Money; devices: number }
+export type Ownership = {
+  total: Money; licences: Money; support: Money; devices: number; devices_without_price: number
+  by_group: OwnershipGroup[]
+}
+export type CostsAll = {
+  report_month: string | null; year: 'all'; group_by: string; ownership: Ownership
+  replacement: {
+    total: Money
+    years: { year: number; hardware: Money; installation: Money; devices: number; without_price: number }[]
+    by_model: { model: string; category: string; eos_year: number; devices: number; unit_cost: Money | null; total: Money }[]
+  }
+}
+export type CostsYear = {
+  report_month: string | null; year: string; group_by: string; ownership: Ownership
+  plan: {
+    tiles: { full: Money; planned: Money; not_planned: Money; avoided: Money; excluded: Money }
+    devices: { full: number; planned: number; not_planned: number; avoided: number; excluded: number }
+    by_group: { label: string; full: Money; planned: Money }[]
+    by_model: { model: string; category: string; devices: number; planned: number; decommission: number;
+      unit_cost: Money | null; planned_cost: Money }[]
+  }
+}
+export const DEVICE_CATEGORIES = ['Access point', 'Switch', 'Router', 'Data center', 'Other'] as const
+
 export const LOCATION_STATUSES = ['Not planned', 'Next', 'To ship', 'In progress', 'On hold',
   'Exception', 'Decommission', 'Out of scope', 'Done'] as const
 
@@ -118,11 +144,23 @@ export const api = {
     data: { decommission_count: number; replacement_model: string | null }) =>
     request(`/api/eos/${year}/locations/${encodeURIComponent(code)}/models/${encodeURIComponent(model)}`,
       { method: 'PUT', body: JSON.stringify(data) }),
+  costs: <T extends CostsAll | CostsYear>(year: number | 'all', country: string, category: string) => {
+    const q = new URLSearchParams({ year: String(year) })
+    if (country) q.set('country', country)
+    if (category) q.set('device_category', category)
+    return request<T>(`/api/costs?${q}`)
+  },
   listImports: () => request<ImportRecord[]>('/api/imports'),
   createImport: (data: ImportPayload) =>
     request<ImportRecord>('/api/imports', { method: 'POST', body: JSON.stringify(data) }),
   deleteImport: (month: string) =>
     request<void>(`/api/imports/${encodeURIComponent(month)}`, { method: 'DELETE' }),
+}
+
+export function kEur(value: number): string {
+  if (value >= 1e6) return '€' + (value / 1e6).toFixed(2).replace(/0$/, '') + 'M'
+  if (value >= 1000) return '€' + Math.round(value / 1000) + 'k'
+  return '€' + Math.round(value)
 }
 
 export function eur(value: string | number | null | undefined): string {
